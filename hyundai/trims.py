@@ -16,6 +16,8 @@ def run():
 
     # Fetch the Trims
     content_no_trim_models = ""
+    content_new_trims = ""
+    content_deleted_trims = ""
 
     for model in api_models:
         print("Fetching trims of " + model['name'] + " " + model['year'])
@@ -40,9 +42,9 @@ def run():
             if "trims" in hyundai_json:
                 for hyundai_trim in hyundai_json['trims']:
                     trim = {
-                        "Name": hyundai_trim['trimName'],
-                        "Nice name": hyundai_trim['trimName_Fr'],
-                        "Foreign ID": hyundai_trim['trimId'],
+                        "name": hyundai_trim['trimName'],
+                        "nice_name": hyundai_trim['trimName_Fr'],
+                        "foreign_id": hyundai_trim['trimId'],
                     }
                     hyundai_trims.append(trim)
 
@@ -53,7 +55,39 @@ def run():
             content_no_trim_models += "No trims found in Hyundai Canada\n"
             content_no_trim_models += "------------------------------------------------" + "\n"  # nopep8
 
+        # Show the models missing from the API
+        for hyundai_trim in hyundai_trims:
+            found = False
+            for api_trim in api_trims:
+                if api_trim['foreign_id'] == hyundai_trim['foreign_id']:
+                    found = True
+
+            if not found:
+                content_new_trims += "Model: " + model['name'] + " " + model['year'] + "\n"  # nopep8
+                content_new_trims += "Name: " + hyundai_trim['name'] + "\n"
+                content_new_trims += "Nice name: " + hyundai_trim['nice_name'] + "\n"  # nopep8
+                content_new_trims += "Foreign ID: " + hyundai_trim['foreign_id'][1:-1] + "\n"  # nopep8
+                content_new_trims += "------------------------------------------------" + "\n"  # nopep8
+
+        # Show the models deleted from the API
+        for api_trim in api_trims:
+            found = False
+            for hyundai_trim in hyundai_trims:
+                if api_trim['foreign_id'] == hyundai_trim['foreign_id']:
+                    found = True
+
+            if not found:
+                content_deleted_trims += "Model: " + model['name'] + " " + model['year'] + "\n"  # nopep8
+                content_deleted_trims += "Name: " + api_trim['name'] + "\n"
+                content_deleted_trims += "Nice name: " + api_trim['nice_name'] + "\n"  # nopep8
+                content_deleted_trims += "Foreign ID: " + api_trim['foreign_id'][1:-1] + "\n"  # nopep8
+                content_deleted_trims += "------------------------------------------------" + "\n"  # nopep8
+
     if content_no_trim_models != "":
         content_no_trim_models = "No Trims found for those models\n\n" + content_no_trim_models  # nopep8
+    if content_new_trims != "":
+        content_new_trims = "New trims from Hyundai Canada\n\n" + content_new_trims  # nopep8
+    if content_deleted_trims != "":
+        content_deleted_trims = "Deleted trims from Hyundai Canada\n\n" + content_deleted_trims  # nopep8
 
-    return content_no_trim_models
+    return content_no_trim_models + content_new_trims + content_deleted_trims
