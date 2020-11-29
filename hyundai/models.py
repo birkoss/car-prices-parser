@@ -34,7 +34,7 @@ def run():
     for models in hyundai_json['models']:
         for single_model in models:
             model = {
-                "name": single_model['vehicleName_Fr'],
+                "name": single_model['vehicleName_Fr'][0].upper() + single_model['vehicleName_Fr'][1:].lower(),  # nopep8
                 "year": single_model['vehicleYear'],
                 # Since hyundai have { and } around the foreign_id
                 # [1:-1] to remove it
@@ -72,7 +72,7 @@ def run():
     for api_model in api_models:
         found = False
         for hyundai_model in hyundai_models:
-            if api_model['foreign_id'] == hyundai_model['foreign_id'][1:-1]:
+            if api_model['foreign_id'] == hyundai_model['foreign_id']:
                 found = True
 
         if not found:
