@@ -2,7 +2,7 @@ import json
 import requests
 import sys
 
-from helpers import api_fetch, get_settings
+from helpers import api_fetch, api_post, get_settings
 
 
 def run():
@@ -63,11 +63,15 @@ def run():
                     found = True
 
             if not found:
-                content_new_trims += "Model: " + model['name'] + " " + model['year'] + "\n"  # nopep8
-                content_new_trims += "Name: " + hyundai_trim['name'] + "\n"
-                content_new_trims += "Nice name: " + hyundai_trim['nice_name'] + "\n"  # nopep8
-                content_new_trims += "Foreign ID: " + hyundai_trim['foreign_id'][1:-1] + "\n"  # nopep8
-                content_new_trims += "------------------------------------------------" + "\n"  # nopep8
+                response = api_post(trims_url, {
+                    "name": hyundai_trim['name'],
+                    "nice_name": hyundai_trim['nice_name'],
+                    "foreign_id": hyundai_trim['foreign_id'],
+                })
+                if response.status_code == 200:
+                    print(hyundai_trim['name'] + " created!")
+                else:
+                    content_new_trims += "Error! Cannot create " + hyundai_trim['name'] + "!\n"  # nopep8
 
         # Show the models deleted from the API
         for api_trim in api_trims:
@@ -80,14 +84,14 @@ def run():
                 content_deleted_trims += "Model: " + model['name'] + " " + model['year'] + "\n"  # nopep8
                 content_deleted_trims += "Name: " + api_trim['name'] + "\n"
                 content_deleted_trims += "Nice name: " + api_trim['nice_name'] + "\n"  # nopep8
-                content_deleted_trims += "Foreign ID: " + api_trim['foreign_id'][1:-1] + "\n"  # nopep8
+                content_deleted_trims += "Foreign ID: " + api_trim['foreign_id'] + "\n"  # nopep8
                 content_deleted_trims += "------------------------------------------------" + "\n"  # nopep8
 
     if content_no_trim_models != "":
-        content_no_trim_models = "No Trims found for those models\n\n" + content_no_trim_models  # nopep8
+        content_no_trim_models = "\nNo Trims found for those models\n\n" + content_no_trim_models  # nopep8
     if content_new_trims != "":
-        content_new_trims = "New trims from Hyundai Canada\n\n" + content_new_trims  # nopep8
+        content_new_trims = "\nNew trims from Hyundai Canada\n\n" + content_new_trims  # nopep8
     if content_deleted_trims != "":
-        content_deleted_trims = "Deleted trims from Hyundai Canada\n\n" + content_deleted_trims  # nopep8
+        content_deleted_trims = "\nDeleted trims from Hyundai Canada\n\n" + content_deleted_trims  # nopep8
 
     return content_no_trim_models + content_new_trims + content_deleted_trims

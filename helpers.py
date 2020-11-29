@@ -12,6 +12,19 @@ def api_fetch(endpoint):
     return response
 
 
+def api_post(endpoint, data):
+    settings = get_settings()
+
+    headers = {"Authorization": "token " + settings['token']}
+
+    response = requests.post(
+        settings['url'] + endpoint,
+        data=data, headers=headers
+    )
+
+    return response
+
+
 def get_settings():
     settings = {}
     with open('secrets.json') as f:

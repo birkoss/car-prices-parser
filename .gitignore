@@ -1,2 +1,4 @@
 secrets.json
+secrets-dev.json
+secrets-prod.json
 __pycache__
