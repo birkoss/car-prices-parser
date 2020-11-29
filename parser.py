@@ -2,10 +2,14 @@ import sys
 
 from hyundai.models import run as hyundai_models
 from hyundai.trims import run as hyundai_trims
+from mazda.models import run as mazda_models
+from mazda.trims import run as mazda_trims
 
 switcher = {
     "hyundai_models": hyundai_models,
     "hyundai_trims": hyundai_trims,
+    "mazda_models": mazda_models,
+    "mazda_trims": mazda_trims,
 }
 
 make = ""
@@ -23,4 +27,6 @@ if make == "" or function == "":
 # Let's do it
 function_name = switcher.get(make+"_"+function, lambda: "Invalid function")
 
-print(function_name())
+logs = function_name()
+
+print(logs)
