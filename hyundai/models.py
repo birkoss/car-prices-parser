@@ -2,12 +2,14 @@ import json
 import requests
 import sys
 
-from helpers import api_fetch
+from helpers import api_fetch, api_post
 
 
 def run():
+    models_url = "make/hyundai/models"
+
     # Fetch the existing models from the API
-    response = api_fetch("make/hyundai/models")
+    response = api_fetch(models_url)
     if response.status_code != 200:
         print("Error! Cannot fetch models from API (Status code: " + response.status_code + ")")  # nopep8
         sys.exit()
@@ -34,7 +36,9 @@ def run():
             model = {
                 "name": single_model['vehicleName_Fr'],
                 "year": single_model['vehicleYear'],
-                "foreign_id": single_model['modelId'],
+                # Since hyundai have { and } around the foreign_id
+                # [1:-1] to remove it
+                "foreign_id": single_model['modelId'][1:-1],
             }
 
             hyundai_models.append(model)
@@ -45,16 +49,19 @@ def run():
     for hyundai_model in hyundai_models:
         found = False
         for api_model in api_models:
-            # Since hyundai have { and } around the foreign_id
-            # [1:-1] to remove it
-            if api_model['foreign_id'] == hyundai_model['foreign_id'][1:-1]:
+            if api_model['foreign_id'] == hyundai_model['foreign_id']:
                 found = True
 
         if not found:
-            content_new_models += "Name: " + hyundai_model['name'] + "\n"
-            content_new_models += "Year: " + hyundai_model['year'] + "\n"
-            content_new_models += "Foreign ID: " + hyundai_model['foreign_id'][1:-1] + "\n"  # nopep8
-            content_new_models += "------------------------------------------------" + "\n"  # nopep8
+            response = api_post(models_url, {
+                "name": hyundai_model['name'],
+                "year": hyundai_model['year'],
+                "foreign_id": hyundai_model['foreign_id'],
+            })
+            if response.status_code == 200:
+                print(hyundai_model['name'] + " " + hyundai_model['year'] + " created!")  # nopep8
+            else:
+                content_new_models += "Error! Cannot create model " + hyundai_model['name'] + " " + hyundai_model['year'] + "!\n"  # nopep8
 
     if content_new_models != "":
         content_new_models = "New models from Hyundai Canada\n\n" + content_new_models  # nopep8

@@ -71,7 +71,7 @@ def run():
                 if response.status_code == 200:
                     print(hyundai_trim['name'] + " created!")
                 else:
-                    content_new_trims += "Error! Cannot create " + hyundai_trim['name'] + "!\n"  # nopep8
+                    content_new_trims += "Error! Cannot create trim " + hyundai_trim['name'] + "!\n"  # nopep8
 
         # Show the models deleted from the API
         for api_trim in api_trims:
