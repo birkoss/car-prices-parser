@@ -24,6 +24,7 @@ class Logs:
 
     def debug(self, content):
         self.logs['debug'] += content + "\n"
+        print(content)
 
     def error(self, content):
         self.logs['error'] += content + "\n"
