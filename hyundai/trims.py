@@ -2,11 +2,14 @@ import json
 import requests
 import sys
 
-from helpers import api_fetch, api_post, get_settings
+from helpers import api_get, api_post, get_settings, print_separator
 
 
 def run():
-    response = api_fetch("make/hyundai/models")
+    print("API - Fetching models")
+    print_separator()
+
+    response = api_get("make/hyundai/models")
     if response.status_code != 200:
         print("Error! Cannot fetch models from API (Status code: " + str(response.status_code) + ")")  # nopep8
         sys.exit()
@@ -20,11 +23,11 @@ def run():
     content_deleted_trims = ""
 
     for model in api_models:
-        print("Fetching trims of " + model['name'] + " " + model['year'])
+        print("API - Fetching trims of " + model['name'] + " " + model['year'])
 
         # Fetch trims from the API
         trims_url = "make/hyundai/model/" + model['slug'] + "/trims"
-        response = api_fetch(trims_url)
+        response = api_get(trims_url)
         if response.status_code != 200:
             print("Error! Cannot fetch trims of " + model['slug'] + " from API (Status code: " + str(response.status_code) + ")")  # nopep8
             sys.exit()
@@ -36,6 +39,7 @@ def run():
         model_url = "https://www.hyundaicanada.com/fr/hacc/service/showroom/GetShowroomsModelTrimsJson?modelid={" + model['foreign_id'] + "}&prov=QC&lang=fr"  # nopep8
 
         hyundai_trims = []
+        print("Hyundai - Fetching trims of " + model['name'] + " " + model['year'])  # nopep8
         response = requests.get(model_url)
         if response.status_code == 200:
             hyundai_json = json.loads(response.content)
@@ -86,6 +90,8 @@ def run():
                 content_deleted_trims += "Nice name: " + api_trim['nice_name'] + "\n"  # nopep8
                 content_deleted_trims += "Foreign ID: " + api_trim['foreign_id'] + "\n"  # nopep8
                 content_deleted_trims += "------------------------------------------------" + "\n"  # nopep8
+
+        print_separator()
 
     if content_no_trim_models != "":
         content_no_trim_models = "\nNo Trims found for those models\n\n" + content_no_trim_models  # nopep8
