@@ -25,19 +25,8 @@ def api_post(endpoint, data):
     return response
 
 
-def create_logs():
-    return {
-        "debug": "",
-        "error": "",
-    }
-
-
 def get_settings():
     settings = {}
     with open('secrets.json') as f:
         settings = json.load(f)
     return settings
-
-
-def print_separator():
-    print("------------------------------------------------")

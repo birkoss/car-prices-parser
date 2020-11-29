@@ -2,7 +2,7 @@ import json
 import requests
 import sys
 
-from helpers import api_get, api_post, get_settings, print_separator
+from helpers import api_get, api_post
 from logs import Logs
 
 
