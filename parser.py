@@ -2,12 +2,15 @@ import sys
 
 from hyundai.models import run as hyundai_models
 from hyundai.trims import run as hyundai_trims
+from hyundai.prices import run as hyundai_prices
+
 from mazda.models import run as mazda_models
 from mazda.trims import run as mazda_trims
 
 switcher = {
     "hyundai_models": hyundai_models,
     "hyundai_trims": hyundai_trims,
+    "hyundai_prices": hyundai_prices,
     "mazda_models": mazda_models,
     "mazda_trims": mazda_trims,
 }

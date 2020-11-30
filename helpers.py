@@ -1,3 +1,4 @@
+import hashlib
 import json
 import requests
 
@@ -23,6 +24,19 @@ def api_post(endpoint, data):
     )
 
     return response
+
+
+def create_md5(content):
+    md5 = hashlib.md5()
+    md5.update(content.encode("utf-8"))
+
+    return md5.hexdigest()
+
+
+def format_price(price):
+    if price % 1 == 0:
+        return int(price)
+    return price
 
 
 def get_settings():
