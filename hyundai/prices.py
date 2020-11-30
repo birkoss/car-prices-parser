@@ -35,8 +35,8 @@ def run():
             if rebate['rebateSelected']:
                 for rebateType in rebate['rebateTypes']:
                     for rebateOption in rebateType['rebateOptions']:
-                        if rebateOption['term'] not in rebates[rebateType['type']]:  # nopep8
-                            rebates[rebateType['type']][rebateOption['term']] = 0  # nopep8
+                        if rebateOption['term'] not in rebates[rebateType['type'].lower()]:  # nopep8
+                            rebates[rebateType['type'].lower()][rebateOption['term']] = 0  # nopep8
 
                         # Add the rebate amount (WITHOUT TAXES !!!!!!!) Taxes : QC + CA = 1.14975    # nopep8
                         rebates[rebateType['type'].lower()][rebateOption['term']] += (rebateOption['amount'] / 1.14975)  # nopep8
@@ -89,29 +89,18 @@ def run():
 
         for price_type in prices:
             md5 = create_md5(json.dumps(prices[price_type]))
-            print(price_type)
-            print(prices[price_type])
-
-            print(api_trim)
 
             price_url = "make/hyundai/model/" + api_trim['model']['slug'] + "/trim/" + api_trim['slug'] + "/price/" + price_type  # nopep8
-            logs.debug("API - Pushing price - " + trim_fullname + "\n")
+            logs.debug("API - Pushing price (" + price_type + ") - " + trim_fullname)  # nopep8
             response = api_post(price_url, {
                 "hash": create_md5(json.dumps(prices[price_type])),
                 "data": json.dumps(prices[price_type])
             })
             if response.status_code != 200:
-                logs.error("API - Cannot push price - Status code: " + str(response.status_code))  # nopep8
-                print(response.content)
-                print(response)
+                logs.error("API - Cannot push price (" + price_type + ") - Status code: " + str(response.status_code))  # nopep8
                 return logs
             else:
-                print(response.content)
-
-            sys.exit()
-
-        # print(hyundai_prices)
-
-        sys.exit()
+                api_json = json.loads(response.content)
+                logs.debug("API - Response: " + api_json['message'])
 
     return logs
