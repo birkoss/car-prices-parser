@@ -23,7 +23,7 @@ def run():
     # API - Fetch the trims
     for model in api_models:
         logs.debug("API - Fetching trims of " + model['name'] + " " + model['year'])  # nopep8
-        trims_url = "make/mazda/model/" + model['slug'] + "/trims"
+        trims_url = "model/" + model['id'] + "/trims"
         response = api_get(trims_url)
         if response.status_code != 200:
             logs.error("API - Cannot fetch trims of " + model['slug'] + " - Status code: " + str(response.status_code))  # nopep8
@@ -79,7 +79,7 @@ def run():
                         if api_trim['foreign_id'] == mazda_trim['foreign_id']:  # nopep8
                             existing_trim = True
                     if not existing_trim:
-                        response = api_post("make/mazda/model/" + api_model['slug'] + "/trims", {  # nopep8
+                        response = api_post("model/" + api_model['id'] + "/trims", {  # nopep8
                             "name": mazda_trim['name'],
                             "nice_name": mazda_trim['nice_name'],
                             "foreign_id": mazda_trim['foreign_id'],
