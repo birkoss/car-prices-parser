@@ -21,7 +21,7 @@ def run():
     for model in api_models:
         # API - Fetch the trims
         logs.debug("API - Fetching trims of " + model['name'] + " " + model['year'])  # nopep8
-        trims_url = "make/hyundai/model/" + model['slug'] + "/trims"
+        trims_url = "model/" + model['id'] + "/trims"
         response = api_get(trims_url)
         if response.status_code != 200:
             logs.error("API - Cannot fetch trims of " + model['slug'] + " - Status code: " + str(response.status_code))  # nopep8

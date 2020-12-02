@@ -90,7 +90,7 @@ def run():
         for price_type in prices:
             md5 = create_md5(json.dumps(prices[price_type]))
 
-            price_url = "make/hyundai/model/" + api_trim['model']['slug'] + "/trim/" + api_trim['slug'] + "/price/" + price_type  # nopep8
+            price_url = "trim/" + api_trim['id'] + "/price/" + price_type  # nopep8
             logs.debug("API - Pushing price (" + price_type + ") - " + trim_fullname)  # nopep8
             response = api_post(price_url, {
                 "hash": create_md5(json.dumps(prices[price_type])),
