@@ -46,16 +46,18 @@ def run():
         for taxe in hyundai_prices['taxesOrLevies']:
             taxes += taxe['amount']
 
-        # Prepare the prices JSON
+        # Prepare the JSON
         prices = {
-            "cash": {
-                "msrp": format_price(hyundai_prices['msrp']),
-                "delivery": format_price(hyundai_prices['delivery']),
-                "taxe": format_price(taxes),
-                "incentive": "0"
-            },
-            "finance": [],
-            "lease": []
+            "msrp": format_price(hyundai_prices['msrp']),
+            "delivery": format_price(hyundai_prices['delivery']),
+            "taxes": format_price(taxes),
+            "data": {
+                "cash": {
+                    "incentive": "0"
+                },
+                "finance": [],
+                "lease": []
+            }
         }
 
         # Get all purchase options
@@ -73,7 +75,7 @@ def run():
                             option['incentive'] = rebates[price_type][term]  # nopep8
 
                     if price_type == "cash":
-                        prices['cash']['incentive'] = format_price(option['incentive'])  # nopep8
+                        prices['data']['cash']['incentive'] = format_price(option['incentive'])  # nopep8
                     else:
                         price = {
                             "incentive": format_price(option['incentive']),
@@ -85,22 +87,25 @@ def run():
                         if price_type == "lease":
                             price["residual"] = format_price(option['residualAmount16k'] / hyundai_prices['msrp'])  # nopep8
 
-                        prices[price_type].append(price)
+                        prices['data'][price_type].append(price)
 
-        for price_type in prices:
-            md5 = create_md5(json.dumps(prices[price_type]))
+        # Push the data
+        md5 = create_md5(json.dumps(prices))
 
-            price_url = "trim/" + api_trim['id'] + "/price/" + price_type  # nopep8
-            logs.debug("API - Pushing price (" + price_type + ") - " + trim_fullname)  # nopep8
-            response = api_post(price_url, {
-                "hash": create_md5(json.dumps(prices[price_type])),
-                "data": json.dumps(prices[price_type])
-            })
-            if response.status_code != 200:
-                logs.error("API - Cannot push price (" + price_type + ") - Status code: " + str(response.status_code))  # nopep8
-                return logs
-            else:
-                api_json = json.loads(response.content)
-                logs.debug("API - Response: " + api_json['message'])
+        price_url = "trim/" + api_trim['id'] + "/prices"
+        logs.debug("API - Pushing price - " + trim_fullname)  # nopep8
+        response = api_post(price_url, {
+            "msrp": prices['msrp'],
+            "taxes": prices['taxes'],
+            "delivery": prices['delivery'],
+            "hash": create_md5(json.dumps(prices)),
+            "data": json.dumps(prices['data'])
+        })
+        if response.status_code != 200:
+            logs.error("API - Cannot push price - Status code: " + str(response.status_code))  # nopep8
+            return logs
+        else:
+            api_json = json.loads(response.content)
+            logs.debug("API - Response: " + api_json['message'])
 
     return logs
