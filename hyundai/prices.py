@@ -71,7 +71,7 @@ def run():
                     if term in rebates[price_type]:
                         if rebates[price_type][term] > 0:
                             option['incentive'] = rebates[price_type][term]  # nopep8
-        
+
                     if price_type == "cash":
                         prices['cash']['incentive'] = format_price(option['incentive'])  # nopep8
                     else:
